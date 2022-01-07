@@ -19,7 +19,7 @@ public class CreateUserHandler {
         if(!userExists){
             AuthUser authUser = command.getAuthUser();
             User user;
-           
+
         }
 
         return userExists;
