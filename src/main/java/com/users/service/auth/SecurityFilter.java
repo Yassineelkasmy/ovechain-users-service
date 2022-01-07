@@ -6,7 +6,7 @@ import com.google.firebase.auth.FirebaseToken;
 
 import com.users.service.auth.models.Credentials;
 import com.users.service.auth.models.SecurityProperties;
-import com.users.service.auth.models.User;
+import com.users.service.entity.User;
 import com.users.service.utils.CookieUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +22,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+
 
 @Component
 @Slf4j

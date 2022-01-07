@@ -4,7 +4,7 @@ package com.users.service.auth;
 
 import com.users.service.auth.models.Credentials;
 import com.users.service.auth.models.SecurityProperties;
-import com.users.service.auth.models.User;
+import com.users.service.entity.User;
 import com.users.service.utils.CookieUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContext;
