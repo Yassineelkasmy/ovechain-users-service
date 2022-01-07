@@ -21,12 +21,11 @@ public class User implements Serializable {
     @AggregateIdentifier
     @Id
     private String uid;
+    private String email;
     private String firstName;
     private String lastName;
     private String phone;
     private String address;
-    private String name;
-    private String email;
     private boolean isVerified;
     private boolean isEmailVerified;
     private String issuer;

@@ -6,6 +6,7 @@ import com.users.service.commands.CreateUserCommand;
 
 import com.users.service.dto.CreateUserDto;
 import org.axonframework.commandhandling.gateway.CommandGateway;
+import org.axonframework.queryhandling.QueryGateway;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,8 +17,10 @@ import javax.validation.Valid;
 public class UsersController {
     private CommandGateway commandGateway;
 
+
     public UsersController(CommandGateway commandGateway) {
         this.commandGateway = commandGateway;
+
     }
 
 
@@ -27,5 +30,6 @@ public class UsersController {
         commandGateway.sendAndWait(createUserCommand);
         return "User Created";
     }
+
 
 }
