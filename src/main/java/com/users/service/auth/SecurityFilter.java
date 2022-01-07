@@ -4,9 +4,9 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseToken;
 
+import com.users.service.auth.models.AuthUser;
 import com.users.service.auth.models.Credentials;
 import com.users.service.auth.models.SecurityProperties;
-import com.users.service.entity.User;
 import com.users.service.utils.CookieUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,7 +71,7 @@ public class SecurityFilter extends OncePerRequestFilter {
             e.printStackTrace();
             log.error("Firebase Exception:: ", e.getLocalizedMessage());
         }
-        User user = firebaseTokenToUserDto(decodedToken);
+        AuthUser user = firebaseTokenToUserDto(decodedToken);
         if (user != null) {
             UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user,
                     new Credentials(type, decodedToken, token, session), null);
@@ -80,10 +80,10 @@ public class SecurityFilter extends OncePerRequestFilter {
         }
     }
 
-    private User firebaseTokenToUserDto(FirebaseToken decodedToken) {
-        User user = null;
+    private AuthUser firebaseTokenToUserDto(FirebaseToken decodedToken) {
+        AuthUser user = null;
         if (decodedToken != null) {
-            user = new User();
+            user = new AuthUser();
             user.setUid(decodedToken.getUid());
             user.setName(decodedToken.getName());
             user.setEmail(decodedToken.getEmail());

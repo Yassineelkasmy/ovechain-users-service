@@ -2,9 +2,10 @@ package com.users.service.auth;
 
 
 
+import com.users.service.auth.models.AuthUser;
 import com.users.service.auth.models.Credentials;
 import com.users.service.auth.models.SecurityProperties;
-import com.users.service.entity.User;
+
 import com.users.service.utils.CookieUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContext;
@@ -27,12 +28,12 @@ public class SecurityService {
     @Autowired
     SecurityProperties securityProps;
 
-    public User getUser() {
-        User userPrincipal = null;
+    public AuthUser getUser() {
+        AuthUser userPrincipal = null;
         SecurityContext securityContext = SecurityContextHolder.getContext();
         Object principal = securityContext.getAuthentication().getPrincipal();
-        if (principal instanceof User) {
-            userPrincipal = ((User) principal);
+        if (principal instanceof AuthUser) {
+            userPrincipal = ((AuthUser) principal);
         }
         return userPrincipal;
     }
