@@ -25,11 +25,13 @@ public class UsersController {
 
 
     @PostMapping()
-    public String register(@Valid @RequestBody CreateUserDto createUserDto, @AuthenticationPrincipal AuthUser athUser){
+    public String register(@RequestBody CreateUserDto createUserDto, @AuthenticationPrincipal AuthUser athUser){
         CreateUserCommand createUserCommand = new CreateUserCommand(athUser.getUid(),athUser,createUserDto);
         commandGateway.sendAndWait(createUserCommand);
         return "User Created";
     }
+
+
 
 
 }
