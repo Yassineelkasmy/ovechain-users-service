@@ -50,6 +50,3 @@ security:
     - /public/**
   exposed-headers:
     - X-Xsrf-Token
-axon:
-  axonserver:
-    enabled: false
