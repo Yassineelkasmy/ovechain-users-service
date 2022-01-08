@@ -24,8 +24,6 @@ public class User implements Serializable {
     private String phone;
     private String address;
     private boolean isVerified;
-    private boolean isEmailVerified;
-    private String issuer;
-    private String picture;
+
 
 }
