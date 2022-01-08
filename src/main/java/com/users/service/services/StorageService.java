@@ -1,16 +1,19 @@
 package com.users.service.services;
 
+import com.google.api.core.ApiFuture;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.ReadChannel;
+import com.google.cloud.firestore.DocumentSnapshot;
+import com.google.cloud.firestore.Firestore;
 import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.Bucket;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
+import com.google.firebase.cloud.FirestoreClient;
 import com.google.firebase.cloud.StorageClient;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
+
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
@@ -18,17 +21,32 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.channels.Channels;
+import java.util.concurrent.ExecutionException;
+
 
 @Service
 public class StorageService {
     private Bucket bucket;
+    private Firestore db;
     StorageService() {
         this.firebaseInit();
         this.bucket = StorageClient.getInstance().bucket("overchain-72ddf.appspot.com");
+        this.db = FirestoreClient.getFirestore();
     }
 
-    public void downloadFile(String path ,String filename) throws IOException {
-        Blob file = bucket.get(path+"/"+filename);
+    public void createFolder(String folderName) {
+        try {
+            File newDirectory = new File("./"+ folderName);
+
+            FileUtils.forceMkdir(newDirectory);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void downloadFile(String path ,String filename, String destinationFolder) throws IOException {
+        Blob file = this.bucket.get(path+"/"+filename);
 
         ReadChannel reader = file.reader();
 
@@ -38,10 +56,24 @@ public class StorageService {
 
         content = IOUtils.toByteArray(inputStream);
 
-        FileUtils.writeByteArrayToFile(new File("./" + filename), content);
+        FileUtils.writeByteArrayToFile(new File("./"+ destinationFolder + "/" + filename), content);
     }
 
 
+    public void donwloadUserFolder(String uid) throws ExecutionException, InterruptedException, IOException {
+        String[] folders = {"IDCARD-FRONT", "IDCARD-BACK", "TAXES-BILL"};
+        this.createFolder(uid);
+        for(String folder: folders) {
+            ApiFuture<DocumentSnapshot> userDocFuture = this.db.collection("users").document(uid).get();
+            DocumentSnapshot userDoc = userDocFuture.get();
+            String filename = userDoc.get(folder).toString();
+            this.createFolder(uid+"/"+folder);
+            String filePath = uid + "/" + folder;
+            this.downloadFile(filePath,filename,uid + "/" + folder);
+
+        }
+
+    }
 
 
     private void firebaseInit() {
@@ -66,4 +98,7 @@ public class StorageService {
             e.printStackTrace();
         }
     }
+
+
+
 }

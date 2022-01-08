@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 
 import java.io.IOException;
-
+import java.util.concurrent.ExecutionException;
 
 
 @Component
@@ -23,9 +23,10 @@ public class CreateUserHandler {
     @Autowired
     StorageService storageService;
     @CommandHandler()
-    public void handle(CreateUserCommand command) throws IOException {
+    public void handle(CreateUserCommand command) throws IOException, ExecutionException, InterruptedException {
         boolean userExists = this.userRepo.existsById(command.getUid());
-        this.storageService.downloadFile("uploads", "test.htm");
+
+        this.storageService.donwloadUserFolder(command.getAuthUser().getUid());
 
         if(!userExists){
             AuthUser authUser = command.getAuthUser();
