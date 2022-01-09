@@ -3,6 +3,7 @@ package com.users.service.services;
 import com.google.api.core.ApiFuture;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.ReadChannel;
+import com.google.cloud.firestore.DocumentReference;
 import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.cloud.firestore.Firestore;
 import com.google.cloud.storage.Blob;
@@ -21,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.channels.Channels;
+import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 
 
@@ -63,9 +65,10 @@ public class StorageService {
     public void donwloadUserFolder(String uid) throws ExecutionException, InterruptedException, IOException {
         String[] folders = {"IDCARD-FRONT", "IDCARD-BACK", "TAXES-BILL"};
         this.createFolder(uid);
+        this.createFolder(uid + "/properties");
+        ApiFuture<DocumentSnapshot> userDocFuture = this.db.collection("users").document(uid).get();
+        DocumentSnapshot userDoc = userDocFuture.get();
         for(String folder: folders) {
-            ApiFuture<DocumentSnapshot> userDocFuture = this.db.collection("users").document(uid).get();
-            DocumentSnapshot userDoc = userDocFuture.get();
             String filename = userDoc.get(folder).toString();
             this.createFolder(uid+"/"+folder);
             String filePath = uid + "/" + folder;
@@ -74,6 +77,22 @@ public class StorageService {
         }
 
     }
+
+    public void downloadPropertyFolder(String uid, String code, int optionals) throws ExecutionException, InterruptedException, IOException {
+        String[] folders = {"REGISTRATION-LICENSE", "FRONT-IMAGE", "TAXES-BILL"};
+        ApiFuture<DocumentSnapshot> propertyDocFuture = this.db.collection("users").document(uid).collection("properties").document(code).get();
+        DocumentSnapshot propertyDoc = propertyDocFuture.get();
+        for(String folder:folders) {
+            String filename = propertyDoc.get(folder).toString();
+            String filePath = uid + "/properties/" + code + "/" + folder;
+            this.downloadFile(filePath, filename, filePath);
+        }
+
+    }
+
+
+
+
 
 
     private void firebaseInit() {

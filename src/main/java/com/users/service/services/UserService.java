@@ -18,6 +18,11 @@ public class UserService {
     @Autowired
     UserRepository userRepository;
 
+    public User getUser(String uid) {
+        User user = this.userRepository.findById(uid).get();
+        return user;
+    }
+
     public User registerUser(CreateUserDto createUserDto, String uid, String email) throws IOException, ExecutionException, InterruptedException {
         boolean userExists = this.userRepository.existsById(uid);
         User user;

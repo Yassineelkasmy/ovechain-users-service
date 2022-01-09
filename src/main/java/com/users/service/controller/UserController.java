@@ -10,15 +10,28 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.io.IOException;
+import java.util.NoSuchElementException;
 import java.util.concurrent.ExecutionException;
 
 @RestController
-@RequestMapping("/")
-public class UsersController {
+@RequestMapping()
+public class UserController {
 
     @Autowired
     UserService userService;
 
+
+
+    @GetMapping()
+    public ResponseEntity<User> getUser(@AuthenticationPrincipal AuthUser athUser) {
+       try{
+           User user = this.userService.getUser(athUser.getUid());
+           return ResponseEntity.ok(user);
+
+       } catch (NoSuchElementException e) {
+           return ResponseEntity.notFound().build();
+       }
+    }
 
 
     @PostMapping()
@@ -26,10 +39,5 @@ public class UsersController {
         User user = this.userService.registerUser(createUserDto, athUser.getUid(), athUser.getEmail());
         return ResponseEntity.ok(user);
     }
-
-
-
-
-
 
 }
