@@ -14,7 +14,7 @@ import java.util.NoSuchElementException;
 import java.util.concurrent.ExecutionException;
 
 @RestController
-@RequestMapping()
+@RequestMapping("/users")
 public class UserController {
 
     @Autowired

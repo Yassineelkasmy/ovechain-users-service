@@ -19,6 +19,12 @@ public class PropertyService {
     @Autowired
     PropertyRepository propertyRepository;
 
+    public Property[] getUserNewProperties(String uid) {
+        Property property = new Property();
+        property.setUserId(uid);
+        return this.propertyRepository.findAll(Example.of(property)).toArray(Property[]::new);
+    }
+
 
     public Property registerProperty(CreatePropertyDto createPropertyDto, String uid) throws IOException, ExecutionException, InterruptedException {
         this.storageService.downloadPropertyFolder(uid,createPropertyDto.getCode(), 0);
@@ -36,6 +42,7 @@ public class PropertyService {
                 createPropertyDto.getTitle(),
                 createPropertyDto.getDescription(),
                 createPropertyDto.getAddress(),
+                null,
                 false
         );
 
