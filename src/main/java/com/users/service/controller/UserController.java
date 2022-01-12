@@ -28,9 +28,13 @@ public class UserController {
            User user = this.userService.getUser(athUser.getUid());
            return ResponseEntity.ok(user);
 
-       } catch (NoSuchElementException e) {
+       } catch (NoSuchElementException | IOException e) {
            return ResponseEntity.notFound().build();
+       } catch (Exception e) {
+           e.printStackTrace();
        }
+
+       return ResponseEntity.notFound().build();
     }
 
 

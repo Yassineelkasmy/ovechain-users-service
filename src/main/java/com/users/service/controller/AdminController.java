@@ -19,7 +19,8 @@ public class AdminController {
     UserService userService;
 
     @GetMapping("/users")
-    ResponseEntity<List<User>> getUsers() {
+    ResponseEntity<List<User>> getUsers() throws Exception {
         return ResponseEntity.ok(this.userService.getUsers());
     }
+
 }

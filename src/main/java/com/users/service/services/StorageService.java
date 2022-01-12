@@ -3,7 +3,6 @@ package com.users.service.services;
 import com.google.api.core.ApiFuture;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.ReadChannel;
-import com.google.cloud.firestore.DocumentReference;
 import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.cloud.firestore.Firestore;
 import com.google.cloud.storage.Blob;
@@ -18,12 +17,13 @@ import org.apache.commons.io.IOUtils;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.channels.Channels;
-import java.util.Arrays;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.concurrent.ExecutionException;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 
 @Service
@@ -38,7 +38,7 @@ public class StorageService {
 
     public void createFolder(String folderName) {
         try {
-            File newDirectory = new File("./"+ folderName);
+            File newDirectory = new File("./"+"/static/"+ folderName);
 
             FileUtils.forceMkdir(newDirectory);
 
@@ -65,14 +65,14 @@ public class StorageService {
     public void donwloadUserFolder(String uid) throws ExecutionException, InterruptedException, IOException {
         String[] folders = {"IDCARD-FRONT", "IDCARD-BACK", "TAXES-BILL"};
         this.createFolder(uid);
-        this.createFolder(uid + "/properties");
+        this.createFolder( "properties/" + uid);
         ApiFuture<DocumentSnapshot> userDocFuture = this.db.collection("users").document(uid).get();
         DocumentSnapshot userDoc = userDocFuture.get();
         for(String folder: folders) {
             String filename = userDoc.get(folder).toString();
             this.createFolder(uid+"/"+folder);
             String filePath = uid + "/" + folder;
-            this.downloadFile(filePath,filename,uid + "/" + folder);
+            this.downloadFile(filePath,filename,"static/" + filePath);
 
         }
 
@@ -84,11 +84,39 @@ public class StorageService {
         DocumentSnapshot propertyDoc = propertyDocFuture.get();
         for(String folder:folders) {
             String filename = propertyDoc.get(folder).toString();
-            String filePath = uid + "/properties/" + code + "/" + folder;
-            this.downloadFile(filePath, filename, filePath);
+            String filePath =  uid + "/properties/" + code + "/" + folder;
+            this.downloadFile(filePath, filename, "static/properties/" + uid + "/" + code + "/" + folder);
         }
 
     }
+
+   public void zipUserFolder(String uid) throws Exception {
+        String folderToZIp = "./static/"+ uid;
+        String zipName = "./static/"+uid+".zip";
+        this.zipFolder(Paths.get(folderToZIp), Paths.get(zipName));
+   }
+
+   public void zipPropertyFolder(String uid, String propertyCode) throws Exception {
+       String folderToZIp = "./static/properties/"+ uid + "/" + propertyCode;
+       String zipName = "./static/properties/"+ uid + "/" + propertyCode +".zip";
+       this.zipFolder(Paths.get(folderToZIp), Paths.get(zipName));
+   }
+
+
+   void  zipFolder(Path sourceFolderPath, Path zipPath) throws Exception {
+        ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(zipPath.toFile()));
+        Files.walkFileTree(sourceFolderPath, new SimpleFileVisitor<Path>() {
+            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                zos.putNextEntry(new ZipEntry(sourceFolderPath.relativize(file).toString()));
+                Files.copy(file, zos);
+                zos.closeEntry();
+                return FileVisitResult.CONTINUE;
+            }
+        });
+        zos.close();
+
+    }
+
 
 
 

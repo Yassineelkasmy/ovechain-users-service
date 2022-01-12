@@ -20,6 +20,7 @@ public class UserService {
     UserRepository userRepository;
 
     public List<User> getUsers() {
+
         return this.userRepository.findAll();
     }
 
@@ -27,6 +28,7 @@ public class UserService {
         User user = this.userRepository.findById(uid).get();
         return user;
     }
+
 
     public User registerUser(CreateUserDto createUserDto, String uid, String email) throws IOException, ExecutionException, InterruptedException {
         boolean userExists = this.userRepository.existsById(uid);
