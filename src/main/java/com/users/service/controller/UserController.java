@@ -3,11 +3,14 @@ package com.users.service.controller;
 import com.users.service.auth.models.AuthUser;
 import com.users.service.dto.CreateUserDto;
 import com.users.service.entity.User;
+import com.users.service.services.StorageService;
 import com.users.service.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.ServletContext;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.util.NoSuchElementException;
@@ -17,8 +20,13 @@ import java.util.concurrent.ExecutionException;
 @RequestMapping("/users")
 public class UserController {
 
+
+
     @Autowired
     UserService userService;
+
+
+
 
 
 
@@ -28,13 +36,10 @@ public class UserController {
            User user = this.userService.getUser(athUser.getUid());
            return ResponseEntity.ok(user);
 
-       } catch (NoSuchElementException | IOException e) {
+       } catch (NoSuchElementException e) {
            return ResponseEntity.notFound().build();
-       } catch (Exception e) {
-           e.printStackTrace();
        }
 
-       return ResponseEntity.notFound().build();
     }
 
 
@@ -43,5 +48,8 @@ public class UserController {
         User user = this.userService.registerUser(createUserDto, athUser.getUid(), athUser.getEmail());
         return ResponseEntity.ok(user);
     }
+
+
+
 
 }
