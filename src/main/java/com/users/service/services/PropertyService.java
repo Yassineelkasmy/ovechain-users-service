@@ -55,4 +55,11 @@ public class PropertyService {
 
         return this.propertyRepository.save(newProperty);
     }
+
+
+    public Property verifyProperty(String propertyId) {
+        Property property = this.propertyRepository.findById(propertyId).get();
+        property.setVerified(true);
+        return this.propertyRepository.save(property);
+    }
 }

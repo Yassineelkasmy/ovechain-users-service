@@ -1,9 +1,13 @@
 package com.users.service.controller;
 
 
+import com.users.service.dto.DownloadPropertyFolderDto;
+import com.users.service.dto.VerifyPropertyDto;
 import com.users.service.dto.VerifyUserDto;
+import com.users.service.entity.Contract;
 import com.users.service.entity.Property;
 import com.users.service.entity.User;
+import com.users.service.services.ContractService;
 import com.users.service.services.PropertyService;
 import com.users.service.services.StorageService;
 import com.users.service.services.UserService;
@@ -33,6 +37,9 @@ public class AdminController {
     PropertyService propertyService;
 
     @Autowired
+    ContractService contractService;
+
+    @Autowired
     ServletContext context;
 
     @Autowired
@@ -54,6 +61,12 @@ public class AdminController {
         return ResponseEntity.ok(user);
     }
 
+    @PostMapping("/verifyproperty")
+    ResponseEntity<Property> verifyProperty(@Valid @RequestBody VerifyPropertyDto verifyPropertyDto) {
+        Property property = this.propertyService.verifyProperty(verifyPropertyDto.getPropertyId());
+        return ResponseEntity.ok(property);
+    }
+
 
 
     @RequestMapping("/userfolder/{fileName:.+}")
@@ -67,16 +80,11 @@ public class AdminController {
 
         String downloadFolder = context.getRealPath("./static/");
         Path file = Paths.get("./static", fileName);
-        // Check if file exists
         if (Files.exists(file)) {
-            // set content type
             response.setContentType("application/pdf");
-            // add response header
             response.addHeader("Content-Disposition", "attachment; filename=" + fileName);
             try {
-                // copies all bytes from a file to an output stream
                 Files.copy(file, response.getOutputStream());
-                // flushes output stream
                 response.getOutputStream().flush();
             } catch (IOException e) {
                 System.out.println("Error :- " + e.getMessage());
@@ -84,5 +92,36 @@ public class AdminController {
         } else {
             System.out.println("Sorry File not found!!!!");
         }
+    }
+
+    @PostMapping("/propertyfolder/{fileName:.+}")
+    public void downloadPropertyFolder(HttpServletRequest request, HttpServletResponse response,
+                                       @PathVariable("fileName") String fileName, @Valid @RequestBody DownloadPropertyFolderDto downloadPropertyFolderDto) throws Exception {
+
+        String code = fileName.substring(0,fileName.lastIndexOf("."));
+        this.storageService.zipPropertyFolder(downloadPropertyFolderDto.getUserId(),code);
+
+        System.out.println("Downloading file :- " + fileName);
+
+        String downloadFolder = context.getRealPath("./static/");
+        Path file = Paths.get("./static/properties/"+ downloadPropertyFolderDto.getUserId()+"/", fileName);
+        if (Files.exists(file)) {
+            response.setContentType("application/pdf");
+            response.addHeader("Content-Disposition", "attachment; filename=" + fileName);
+            try {
+                Files.copy(file, response.getOutputStream());
+                response.getOutputStream().flush();
+            } catch (IOException e) {
+                System.out.println("Error :- " + e.getMessage());
+            }
+        } else {
+            System.out.println("Sorry File not found!!!!");
+        }
+    }
+
+    @GetMapping("/contracts")
+    ResponseEntity<List<Contract>> getContracts() {
+        List<Contract> contracts = this.contractService.getContracts();
+        return ResponseEntity.ok(contracts);
     }
 }
