@@ -8,6 +8,7 @@ import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
@@ -24,6 +25,12 @@ public class PropertyService {
         property.setUserId(uid);
         return this.propertyRepository.findAll(Example.of(property)).toArray(Property[]::new);
     }
+
+    public List<Property> getProperties() {
+        return this.propertyRepository.findAll();
+    }
+
+
 
 
     public Property registerProperty(CreatePropertyDto createPropertyDto, String uid) throws IOException, ExecutionException, InterruptedException {

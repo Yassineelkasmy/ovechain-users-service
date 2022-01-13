@@ -58,4 +58,10 @@ public class UserService {
         return user;
 
     }
+
+    public User verifyUser(String uid) {
+        User user = this.userRepository.findById(uid).get();
+        user.setVerified(true);
+        return this.userRepository.save(user);
+    }
 }
