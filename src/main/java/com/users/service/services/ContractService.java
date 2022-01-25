@@ -28,6 +28,10 @@ public class ContractService {
         return contractRepository.findAll();
     }
 
+    public Contract getContract(String contractID) {
+        return contractRepository.findById(contractID).get();
+    }
+
     public Contract submitContract(CreateContractDto createContractDto, String uid) {
         Property property = new Property();
         property.setUserId(uid);

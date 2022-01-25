@@ -101,6 +101,14 @@ public class AdminController {
         return ResponseEntity.ok(contracts);
     }
 
+    @GetMapping("/contracts/{id}")
+    ResponseEntity<Contract> getContract(String id) {
+        Contract contract = contractService.getContract(id);
+        return ResponseEntity.ok(contract);
+    }
+
+
+    @PostMapping("/verifycontract")
     ResponseEntity<Contract> verifyContract(@Valid @RequestBody VerifyContractDto verifyContractDto) {
         Contract contract = contractService.verifyContract(verifyContractDto.getContractId());
         return ResponseEntity.ok(contract);
