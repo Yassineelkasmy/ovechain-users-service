@@ -67,8 +67,6 @@ public class AdminController {
         return ResponseEntity.ok(property);
     }
 
-
-
     @RequestMapping("/userfolder/{fileName:.+}")
     public void downloadUserFolder(HttpServletRequest request, HttpServletResponse response,
                                    @PathVariable("fileName") String fileName) throws Exception {
@@ -76,22 +74,8 @@ public class AdminController {
         String uid = fileName.substring(0,fileName.lastIndexOf("."));
         this.storageService.zipUserFolder(uid);
 
-        System.out.println("Downloading file :- " + fileName);
-
-        String downloadFolder = context.getRealPath("./static/");
         Path file = Paths.get("./static", fileName);
-        if (Files.exists(file)) {
-            response.setContentType("application/pdf");
-            response.addHeader("Content-Disposition", "attachment; filename=" + fileName);
-            try {
-                Files.copy(file, response.getOutputStream());
-                response.getOutputStream().flush();
-            } catch (IOException e) {
-                System.out.println("Error :- " + e.getMessage());
-            }
-        } else {
-            System.out.println("Sorry File not found!!!!");
-        }
+        sendFile(response, fileName, file);
     }
 
     @PostMapping("/propertyfolder/{fileName:.+}")
@@ -101,10 +85,17 @@ public class AdminController {
         String code = fileName.substring(0,fileName.lastIndexOf("."));
         this.storageService.zipPropertyFolder(downloadPropertyFolderDto.getUserId(),code);
 
-        System.out.println("Downloading file :- " + fileName);
-
-        String downloadFolder = context.getRealPath("./static/");
         Path file = Paths.get("./static/properties/"+ downloadPropertyFolderDto.getUserId()+"/", fileName);
+        sendFile(response, fileName, file);
+    }
+
+    @GetMapping("/contracts")
+    ResponseEntity<List<Contract>> getContracts() {
+        List<Contract> contracts = this.contractService.getContracts();
+        return ResponseEntity.ok(contracts);
+    }
+
+    private void sendFile(HttpServletResponse response, @PathVariable("fileName") String fileName, Path file) {
         if (Files.exists(file)) {
             response.setContentType("application/pdf");
             response.addHeader("Content-Disposition", "attachment; filename=" + fileName);
@@ -117,11 +108,5 @@ public class AdminController {
         } else {
             System.out.println("Sorry File not found!!!!");
         }
-    }
-
-    @GetMapping("/contracts")
-    ResponseEntity<List<Contract>> getContracts() {
-        List<Contract> contracts = this.contractService.getContracts();
-        return ResponseEntity.ok(contracts);
     }
 }
