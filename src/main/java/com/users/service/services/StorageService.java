@@ -28,12 +28,12 @@ import java.util.zip.ZipOutputStream;
 
 @Service
 public class StorageService {
-    private Bucket bucket;
-    private Firestore db;
+    private final Bucket bucket;
+    private final Firestore db;
     StorageService() {
-        this.firebaseInit();
-        this.bucket = StorageClient.getInstance().bucket("overchain-72ddf.appspot.com");
-        this.db = FirestoreClient.getFirestore();
+        firebaseInit();
+        bucket = StorageClient.getInstance().bucket("overchain-72ddf.appspot.com");
+        db = FirestoreClient.getFirestore();
     }
 
     public void createFolder(String folderName) {
@@ -48,7 +48,7 @@ public class StorageService {
     }
 
     private void downloadFile(String path ,String filename, String destinationFolder) throws IOException {
-        Blob file = this.bucket.get(path+"/"+filename);
+        Blob file = bucket.get(path+"/"+filename);
 
         ReadChannel reader = file.reader();
 
@@ -62,17 +62,17 @@ public class StorageService {
     }
 
 
-    public void donwloadUserFolder(String uid) throws ExecutionException, InterruptedException, IOException {
+    public void downloadUserFolder(String uid) throws ExecutionException, InterruptedException, IOException {
         String[] folders = {"IDCARD-FRONT", "IDCARD-BACK", "TAXES-BILL"};
-        this.createFolder(uid);
-        this.createFolder( "properties/" + uid);
-        ApiFuture<DocumentSnapshot> userDocFuture = this.db.collection("users").document(uid).get();
+        createFolder(uid);
+        createFolder( "properties/" + uid);
+        ApiFuture<DocumentSnapshot> userDocFuture = db.collection("users").document(uid).get();
         DocumentSnapshot userDoc = userDocFuture.get();
         for(String folder: folders) {
             String filename = userDoc.get(folder).toString();
-            this.createFolder(uid+"/"+folder);
+            createFolder(uid+"/"+folder);
             String filePath = uid + "/" + folder;
-            this.downloadFile(filePath,filename,"static/" + filePath);
+            downloadFile(filePath,filename,"static/" + filePath);
 
         }
 
@@ -80,12 +80,12 @@ public class StorageService {
 
     public void downloadPropertyFolder(String uid, String code, int optionals) throws ExecutionException, InterruptedException, IOException {
         String[] folders = {"REGISTRATION-LICENSE", "FRONT-IMAGE", "TAXES-BILL"};
-        ApiFuture<DocumentSnapshot> propertyDocFuture = this.db.collection("users").document(uid).collection("properties").document(code).get();
+        ApiFuture<DocumentSnapshot> propertyDocFuture = db.collection("users").document(uid).collection("properties").document(code).get();
         DocumentSnapshot propertyDoc = propertyDocFuture.get();
         for(String folder:folders) {
             String filename = propertyDoc.get(folder).toString();
             String filePath =  uid + "/properties/" + code + "/" + folder;
-            this.downloadFile(filePath, filename, "static/properties/" + uid + "/" + code + "/" + folder);
+            downloadFile(filePath, filename, "static/properties/" + uid + "/" + code + "/" + folder);
         }
 
     }
@@ -93,13 +93,13 @@ public class StorageService {
    public void zipUserFolder(String uid) throws Exception {
         String folderToZIp = "./static/"+ uid;
         String zipName = "./static/"+uid+".zip";
-        this.zipFolder(Paths.get(folderToZIp), Paths.get(zipName));
+        zipFolder(Paths.get(folderToZIp), Paths.get(zipName));
    }
 
    public void zipPropertyFolder(String uid, String propertyCode) throws Exception {
        String folderToZIp = "./static/properties/"+ uid + "/" + propertyCode;
        String zipName = "./static/properties/"+ uid + "/" + propertyCode +".zip";
-       this.zipFolder(Paths.get(folderToZIp), Paths.get(zipName));
+       zipFolder(Paths.get(folderToZIp), Paths.get(zipName));
    }
 
 
@@ -116,12 +116,6 @@ public class StorageService {
         zos.close();
 
     }
-
-
-
-
-
-
 
     private void firebaseInit() {
         InputStream inputStream = null;
@@ -145,7 +139,5 @@ public class StorageService {
             e.printStackTrace();
         }
     }
-
-
 
 }

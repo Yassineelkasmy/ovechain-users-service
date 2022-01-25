@@ -23,24 +23,24 @@ public class PropertyService {
     public Property[] getUserNewProperties(String uid) {
         Property property = new Property();
         property.setUserId(uid);
-        return this.propertyRepository.findAll(Example.of(property)).toArray(Property[]::new);
+        return propertyRepository.findAll(Example.of(property)).toArray(Property[]::new);
     }
 
     public List<Property> getProperties() {
-        return this.propertyRepository.findAll();
+        return propertyRepository.findAll();
     }
 
 
 
 
     public Property registerProperty(CreatePropertyDto createPropertyDto, String uid) throws IOException, ExecutionException, InterruptedException {
-        this.storageService.downloadPropertyFolder(uid,createPropertyDto.getCode(), 0);
+        storageService.downloadPropertyFolder(uid,createPropertyDto.getCode(), 0);
         Property property = new Property();
         property.setUserId(uid);
         property.setCode(createPropertyDto.getCode());
-        boolean propertyExists = this.propertyRepository.exists(Example.of(property));
+        boolean propertyExists = propertyRepository.exists(Example.of(property));
         if(propertyExists) {
-            return this.propertyRepository.findOne(Example.of(property)).get();
+            return propertyRepository.findOne(Example.of(property)).get();
         }
         Property newProperty = new Property(
                 UUID.randomUUID().toString(),
@@ -53,13 +53,13 @@ public class PropertyService {
                 false
         );
 
-        return this.propertyRepository.save(newProperty);
+        return propertyRepository.save(newProperty);
     }
 
 
     public Property verifyProperty(String propertyId) {
-        Property property = this.propertyRepository.findById(propertyId).get();
+        Property property = propertyRepository.findById(propertyId).get();
         property.setVerified(true);
-        return this.propertyRepository.save(property);
+        return propertyRepository.save(property);
     }
 }

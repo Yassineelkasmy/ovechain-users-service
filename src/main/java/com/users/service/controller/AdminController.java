@@ -2,6 +2,7 @@ package com.users.service.controller;
 
 
 import com.users.service.dto.DownloadPropertyFolderDto;
+import com.users.service.dto.VerifyContractDto;
 import com.users.service.dto.VerifyPropertyDto;
 import com.users.service.dto.VerifyUserDto;
 import com.users.service.entity.Contract;
@@ -45,26 +46,16 @@ public class AdminController {
     @Autowired
     StorageService storageService;
 
+    // Users
     @GetMapping("/users")
     ResponseEntity<List<User>> getUsers() {
         return ResponseEntity.ok(this.userService.getUsers());
-    }
-
-    @GetMapping("/properties")
-    ResponseEntity<List<Property>> getProperties() {
-        return ResponseEntity.ok(this.propertyService.getProperties());
     }
 
     @PostMapping("/verifyuser")
     ResponseEntity<User> verifyUser(@Valid @RequestBody VerifyUserDto verifyUserDto) {
         User user = this.userService.verifyUser(verifyUserDto.getUserId());
         return ResponseEntity.ok(user);
-    }
-
-    @PostMapping("/verifyproperty")
-    ResponseEntity<Property> verifyProperty(@Valid @RequestBody VerifyPropertyDto verifyPropertyDto) {
-        Property property = this.propertyService.verifyProperty(verifyPropertyDto.getPropertyId());
-        return ResponseEntity.ok(property);
     }
 
     @RequestMapping("/userfolder/{fileName:.+}")
@@ -78,6 +69,19 @@ public class AdminController {
         sendFile(response, fileName, file);
     }
 
+
+    //Properties
+    @GetMapping("/properties")
+    ResponseEntity<List<Property>> getProperties() {
+        return ResponseEntity.ok(this.propertyService.getProperties());
+    }
+
+    @PostMapping("/verifyproperty")
+    ResponseEntity<Property> verifyProperty(@Valid @RequestBody VerifyPropertyDto verifyPropertyDto) {
+        Property property = this.propertyService.verifyProperty(verifyPropertyDto.getPropertyId());
+        return ResponseEntity.ok(property);
+    }
+
     @PostMapping("/propertyfolder/{fileName:.+}")
     public void downloadPropertyFolder(HttpServletRequest request, HttpServletResponse response,
                                        @PathVariable("fileName") String fileName, @Valid @RequestBody DownloadPropertyFolderDto downloadPropertyFolderDto) throws Exception {
@@ -89,12 +93,22 @@ public class AdminController {
         sendFile(response, fileName, file);
     }
 
+
+    //Contracts
     @GetMapping("/contracts")
     ResponseEntity<List<Contract>> getContracts() {
         List<Contract> contracts = this.contractService.getContracts();
         return ResponseEntity.ok(contracts);
     }
 
+    ResponseEntity<Contract> verifyContract(@Valid @RequestBody VerifyContractDto verifyContractDto) {
+        Contract contract = contractService.verifyContract(verifyContractDto.getContractId());
+        return ResponseEntity.ok(contract);
+    }
+
+
+
+    //Utility function to send file back to client
     private void sendFile(HttpServletResponse response, @PathVariable("fileName") String fileName, Path file) {
         if (Files.exists(file)) {
             response.setContentType("application/pdf");

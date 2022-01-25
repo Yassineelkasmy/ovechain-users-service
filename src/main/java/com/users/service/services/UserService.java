@@ -20,26 +20,24 @@ public class UserService {
     UserRepository userRepository;
 
     public List<User> getUsers() {
-
-        return this.userRepository.findAll();
+        return userRepository.findAll();
     }
 
     public User getUser(String uid) {
-        User user = this.userRepository.findById(uid).get();
-        return user;
+        return userRepository.findById(uid).get();
     }
 
 
     public User registerUser(CreateUserDto createUserDto, String uid, String email) throws IOException, ExecutionException, InterruptedException {
-        boolean userExists = this.userRepository.existsById(uid);
+        boolean userExists = userRepository.existsById(uid);
         User user;
         if(userExists) {
-            user = this.userRepository.findById(uid).get();
+            user = userRepository.findById(uid).get();
 
             return user;
         }
         else {
-            this.storageService.donwloadUserFolder(uid);
+            storageService.downloadUserFolder(uid);
 
             User newUser = new User(
                     uid,
@@ -51,7 +49,7 @@ public class UserService {
                     false
             );
 
-            user = this.userRepository.save(newUser);
+            user = userRepository.save(newUser);
 
         }
 
@@ -60,8 +58,9 @@ public class UserService {
     }
 
     public User verifyUser(String uid) {
-        User user = this.userRepository.findById(uid).get();
+        User user;
+        user = userRepository.findById(uid).get();
         user.setVerified(true);
-        return this.userRepository.save(user);
+        return userRepository.save(user);
     }
 }

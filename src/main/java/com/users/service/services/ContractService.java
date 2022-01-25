@@ -25,7 +25,7 @@ public class ContractService {
     ContractRepository contractRepository;
 
     public List<Contract> getContracts() {
-        return this.contractRepository.findAll();
+        return contractRepository.findAll();
     }
 
     public Contract submitContract(CreateContractDto createContractDto, String uid) {
@@ -33,7 +33,7 @@ public class ContractService {
         property.setUserId(uid);
         property.setCode(createContractDto.getPropertyCode());
 
-        Property candidate  = this.propertyRepository.findOne(Example.of(property)).get();
+        Property candidate  = propertyRepository.findOne(Example.of(property)).get();
 
         if(candidate.getContractId() == null){
             Contract contract = new Contract(
@@ -47,7 +47,7 @@ public class ContractService {
                     createContractDto.getWhiteListWallets(),
                     createContractDto.getBlackListWallets()
             );
-            Contract newContract =  this.contractRepository.save(contract);
+            Contract newContract =  contractRepository.save(contract);
             candidate.setContractId(newContract.getId());
             this.propertyRepository.save(candidate);
             return newContract;
@@ -55,8 +55,15 @@ public class ContractService {
         else {
             Contract contract = new Contract();
             contract.setPropertyId(property.getId());
-            return this.contractRepository.findOne(Example.of(contract)).get();
+            return contractRepository.findOne(Example.of(contract)).get();
         }
 
     }
+
+    public Contract verifyContract(String contractId) {
+        Contract contract = contractRepository.findById(contractId).get();
+        contract.setIsVerified(true);
+        return contractRepository.save(contract);
+    }
+
 }
