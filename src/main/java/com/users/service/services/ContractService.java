@@ -47,6 +47,7 @@ public class ContractService {
                     createContractDto.getWallet(),
                     createContractDto.getPrice(),
                     false,
+                    false,
                     SmartContractType.BASIC,
                     createContractDto.getWhiteListWallets(),
                     createContractDto.getBlackListWallets()

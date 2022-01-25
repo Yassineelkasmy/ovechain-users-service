@@ -102,7 +102,7 @@ public class AdminController {
     }
 
     @GetMapping("/contracts/{id}")
-    ResponseEntity<Contract> getContract(String id) {
+    ResponseEntity<Contract> getContract(@PathVariable String id) {
         Contract contract = contractService.getContract(id);
         return ResponseEntity.ok(contract);
     }

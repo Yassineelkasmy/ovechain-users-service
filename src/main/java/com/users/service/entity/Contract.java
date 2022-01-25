@@ -24,6 +24,7 @@ public class Contract implements Serializable{
     private String sellerWallet;
     private Float priceETH;
     private Boolean isVerified;
+    private Boolean isDeployed;
     private SmartContractType type;
     private String[] whiteListWallets;
     private String[] blackListWallets;
