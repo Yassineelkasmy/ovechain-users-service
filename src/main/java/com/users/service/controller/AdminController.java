@@ -1,10 +1,7 @@
 package com.users.service.controller;
 
 
-import com.users.service.dto.DownloadPropertyFolderDto;
-import com.users.service.dto.VerifyContractDto;
-import com.users.service.dto.VerifyPropertyDto;
-import com.users.service.dto.VerifyUserDto;
+import com.users.service.dto.*;
 import com.users.service.entity.Contract;
 import com.users.service.entity.Property;
 import com.users.service.entity.User;
@@ -111,6 +108,13 @@ public class AdminController {
     @PostMapping("/verifycontract")
     ResponseEntity<Contract> verifyContract(@Valid @RequestBody VerifyContractDto verifyContractDto) {
         Contract contract = contractService.verifyContract(verifyContractDto.getContractId());
+        return ResponseEntity.ok(contract);
+    }
+
+    @PostMapping("/deploycontract")
+    ResponseEntity<Contract> deployContract(@Valid @RequestBody DeployContractDto deployContractDto) {
+        System.out.println("inside Deploy contract");
+        Contract contract = contractService.deployContract(deployContractDto.getContractId(),deployContractDto.getContractAddress());
         return ResponseEntity.ok(contract);
     }
 

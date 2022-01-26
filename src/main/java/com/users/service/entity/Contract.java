@@ -21,8 +21,9 @@ public class Contract implements Serializable{
     private String id;
     private String userId;
     private String propertyId;
+    private String contractAddress;
     private String sellerWallet;
-    private Float priceETH;
+    private Float price;
     private Boolean isVerified;
     private Boolean isDeployed;
     private SmartContractType type;

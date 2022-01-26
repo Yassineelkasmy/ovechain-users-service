@@ -44,6 +44,7 @@ public class ContractService {
                     UUID.randomUUID().toString(),
                     uid,
                     candidate.getId(),
+                    null,
                     createContractDto.getWallet(),
                     createContractDto.getPrice(),
                     false,
@@ -71,4 +72,12 @@ public class ContractService {
         return contractRepository.save(contract);
     }
 
+    public Contract deployContract(String contractId,String contractAddress) {
+        System.out.println("inside deploy contract service");
+        Contract contract = contractRepository.findById(contractId).get();
+        contract.setContractAddress(contractAddress);
+        contract.setIsDeployed(true);
+        System.out.println("contract deployed : "+contract.getIsDeployed());
+        return contractRepository.save(contract);
+    }
 }
