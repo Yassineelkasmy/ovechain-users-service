@@ -29,6 +29,9 @@ public class PropertyService {
     public List<Property> getProperties() {
         return propertyRepository.findAll();
     }
+    public Property getPropertyId(String id) {
+        return propertyRepository.findPropertyById(id);
+    }
 
 
 

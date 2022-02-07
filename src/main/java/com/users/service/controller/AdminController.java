@@ -3,6 +3,7 @@ package com.users.service.controller;
 
 import com.users.service.dto.*;
 import com.users.service.entity.Contract;
+import com.users.service.entity.DeployedContract;
 import com.users.service.entity.Property;
 import com.users.service.entity.User;
 import com.users.service.services.ContractService;
@@ -11,6 +12,7 @@ import com.users.service.services.StorageService;
 import com.users.service.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,6 +44,9 @@ public class AdminController {
 
     @Autowired
     StorageService storageService;
+
+    @Autowired
+    private KafkaTemplate<String, DeployedContract> deployedContractKafkaTemplate;
 
     // Users
     @GetMapping("/users")
@@ -114,7 +119,25 @@ public class AdminController {
     @PostMapping("/deploycontract")
     ResponseEntity<Contract> deployContract(@Valid @RequestBody DeployContractDto deployContractDto) {
         System.out.println("inside Deploy contract");
+
         Contract contract = contractService.deployContract(deployContractDto.getContractId(),deployContractDto.getContractAddress());
+        Property property = propertyService.getPropertyId(contract.getPropertyId());
+
+        DeployedContract deployedContract = new DeployedContract();
+
+        //Constructing apache kafka deployed contract payload
+        deployedContract.setPropertyCode(property.getCode());
+        deployedContract.setContractAddress(contract.getContractAddress());
+        deployedContract.setType(contract.getType().toString());
+        deployedContract.setTitle(property.getTitle());
+        deployedContract.setPrice(contract.getPrice());
+        deployedContract.setDescription(property.getDescription());
+        deployedContract.setId(contract.getId());
+        deployedContract.setSellerWallet(contract.getSellerWallet());
+        deployedContract.setPropertyAddress(property.getAddress());
+
+        deployedContractKafkaTemplate.send("contract", deployedContract);
+
         return ResponseEntity.ok(contract);
     }
 
