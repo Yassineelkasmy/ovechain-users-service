@@ -1,6 +1,8 @@
 package com.users.service.services;
 
+import com.users.service.dto.createcontract.CreateBlackListedContractDto;
 import com.users.service.dto.createcontract.CreateContractDto;
+import com.users.service.dto.createcontract.CreateWhiteListedContractDto;
 import com.users.service.entity.Contract;
 import com.users.service.entity.Property;
 import com.users.service.enums.SmartContractType;
@@ -39,8 +41,21 @@ public class ContractService {
 
         Property candidate  = propertyRepository.findOne(Example.of(property)).get();
 
+
         if(candidate.getContractId() == null){
-            Contract contract = new Contract(
+
+            Contract contract = new Contract();
+            SmartContractType contractType ;
+            if(createContractDto instanceof CreateWhiteListedContractDto)
+                contractType = SmartContractType.WHITELISTED;
+
+            else if(createContractDto instanceof CreateBlackListedContractDto)
+                contractType = SmartContractType.BLACKLISTED;
+            else
+                contractType = SmartContractType.BASIC;
+
+
+            contract = new Contract(
                     UUID.randomUUID().toString(),
                     uid,
                     candidate.getId(),
@@ -49,18 +64,23 @@ public class ContractService {
                     createContractDto.getPrice(),
                     false,
                     false,
-                    SmartContractType.BASIC,
+                    contractType,
                     createContractDto.getWhiteListWallets(),
                     createContractDto.getBlackListWallets()
             );
             Contract newContract =  contractRepository.save(contract);
             candidate.setContractId(newContract.getId());
+
+            System.out.println(newContract);
+
             this.propertyRepository.save(candidate);
             return newContract;
         }
         else {
             Contract contract = new Contract();
             contract.setPropertyId(property.getId());
+
+            System.out.println(contract);
             return contractRepository.findOne(Example.of(contract)).get();
         }
 
