@@ -11,6 +11,7 @@
 	<groupId>com.users.service</groupId>
 	<artifactId>users</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+
 	<name>users</name>
 	<description>Overchain users service</description>
 	<properties>

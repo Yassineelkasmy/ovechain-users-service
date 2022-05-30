@@ -14,24 +14,7 @@ public class UsersApplication {
 		SpringApplication.run(UsersApplication.class, args);
 	}
 
-	@Bean
-	CommandLineRunner commandLineRunner(KafkaTemplate<String, DeployedContract> kafkaTemplate) {
-		DeployedContract contract = new DeployedContract();
-		contract.setContractAddress("asdasd");
-		contract.setDescription("asdasd");
-		contract.setId("asdasd");
-		contract.setPrice(12.2f);
-		contract.setPropertyAddress("asdasd");
-		contract.setTitle("asdasd");
-		contract.setSellerWallet("asdasd");
-		contract.setType("asdasd");
-		contract.setPropertyCode("asdasd");
 
-
-		return args -> {
-			kafkaTemplate.send("contract" , contract);
-		};
-	}
 
 
 }
